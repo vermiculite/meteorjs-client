@@ -28,3 +28,6 @@ node_modules
 
 #intellij
 .idea
+
+#cloud 9
+.c9
