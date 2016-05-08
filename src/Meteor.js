@@ -1,5 +1,5 @@
 
-import { NetInfo } from 'react-native';
+import { NetInfo, Platform, View } from 'react-native';
 
 import reactMixin from 'react-mixin';
 import Trackr from 'trackr';
@@ -9,11 +9,16 @@ import Random from '../lib/Random';
 
 import Data from './Data';
 import collection from './Collection';
-import FSCollection from './FSCollection';
 import call from './Call';
 
 import Mixin from './components/Mixin';
 import ListView from './components/ListView';
+import MeteorComplexListView from './components/ComplexListView';
+import createContainer from './components/createContainer';
+
+import FSCollection from './CollectionFS/FSCollection';
+import FSCollectionImagesPreloader from './CollectionFS/FSCollectionImagesPreloader';
+
 import User from './user/User';
 import Accounts from './user/Accounts';
 
@@ -21,10 +26,13 @@ import Accounts from './user/Accounts';
 module.exports = {
   Accounts: Accounts,
   MeteorListView: ListView,
+  MeteorComplexListView: MeteorComplexListView,
+  FSCollectionImagesPreloader: Platform.OS == 'android' ? View : FSCollectionImagesPreloader,
   collection: collection,
   FSCollection: FSCollection,
+  createContainer: createContainer,
   getData() {
-    return Data
+    return Data;
   },
   connectMeteor(reactClass) {
     return reactMixin.onClass(reactClass, Mixin);
@@ -61,11 +69,17 @@ module.exports = {
     } else if(Data.ddp) {
       Data.ddp.once('connected', cb);
     } else {
-      setTimeout(()=>{ this.waitDdpConnected(cb) }, 500);
+      setTimeout(()=>{ this.waitDdpConnected(cb) }, 10);
     }
 
   },
+  reconnect() {
+    Data.ddp && Data.ddp.connect();
+  },
   connect(endpoint, options) {
+    if(!endpoint) endpoint = Data._endpoint;
+    if(!options) options = Data._options;
+
     Data._endpoint = endpoint;
     Data._options = options;
 
@@ -87,15 +101,19 @@ module.exports = {
       console.info("Connected to DDP server.");
       this._loadInitialUser();
 
-      if(Data.hasBeenConnected) {
-        this._subscriptionsRestart();
-      } else {
-        Data.hasBeenConnected = true;
-      }
+      this._subscriptionsRestart();
     });
 
+    let lastDisconnect = null;
     Data.ddp.on("disconnected", ()=>{
       console.info("Disconnected from DDP server.");
+
+      if(!lastDisconnect || new Date() - lastDisconnect > 3000) {
+        Data.ddp.connect();
+      }
+
+      lastDisconnect = new Date();
+
     });
 
     Data.ddp.on("added", message => {
@@ -106,12 +124,14 @@ module.exports = {
     });
 
     Data.ddp.on("ready", message => {
-      /*
+
       for(var i in Data.subscriptions) {
         const sub = Data.subscriptions[i];
-        //console.log(sub.name, EJSON.clone(sub.params), sub.subIdRemember);
+        sub.ready = true;
+        sub.readyDeps.changed();
+        sub.readyCallback && sub.readyCallback();
       }
-      */
+
     });
 
     Data.ddp.on("changed", message => {
@@ -121,7 +141,6 @@ module.exports = {
     Data.ddp.on("removed", message => {
       Data.db[message.collection].del(message.id);
     });
-
     Data.ddp.on("result", message => {
       const call = Data.calls.find(call=>call.id==message.id);
       if(typeof call.callback == 'function') call.callback(message.error, message.result);
@@ -182,6 +201,15 @@ module.exports = {
       id = existing.id;
       existing.inactive = false;
 
+      if (callbacks.onReady) {
+        // If the sub is not already ready, replace any ready callback with the
+        // one provided now. (It's not really clear what users would expect for
+        // an onReady callback inside an autorun; the semantics we provide is
+        // that at the time the sub first becomes ready, we call the last
+        // onReady callback provided, if any.)
+        if (!existing.ready)
+          existing.readyCallback = callbacks.onReady;
+      }
       if (callbacks.onStop) {
         existing.stopCallback = callbacks.onStop;
       }
@@ -200,10 +228,13 @@ module.exports = {
         params: EJSON.clone(params),
         inactive: false,
         ready: false,
+        readyDeps: new Trackr.Dependency,
+        readyCallback: callbacks.onReady,
         stopCallback: callbacks.onStop,
         stop: function() {
           Data.ddp.unsub(this.subIdRemember);
           delete Data.subscriptions[this.id];
+          this.ready && this.readyDeps.changed();
 
           if (callbacks.onStop) {
             callbacks.onStop();
@@ -221,7 +252,11 @@ module.exports = {
           Data.subscriptions[id].stop();
       },
       ready: function () {
-        //TODO
+        if (!Data.subscriptions[id]) return false;
+
+        var record = Data.subscriptions[id];
+        record.readyDeps.depend();
+        return record.ready;
       },
       subscriptionId: id
     };

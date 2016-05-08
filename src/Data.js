@@ -1,14 +1,18 @@
+import React from 'react-native';
 import minimongo from 'minimongo-cache';
 process.nextTick = setImmediate;
+
+const db = new minimongo();
+db.debug = false;
+db.batchedUpdates = React.addons.batchedUpdates;
 
 export default {
   _endpoint: null,
   _options: null,
   ddp: null,
   subscriptions: {},
-  db: new minimongo(),
+  db: db,
   calls: [],
-  hasBeenConnected: false,
 
   getUrl() {
     return this._endpoint.substring(0, this._endpoint.indexOf('/websocket'));
@@ -30,12 +34,14 @@ export default {
     this.ddp.on('connected', cb);
     this.ddp.on('disconnected', cb);
     this.on('loggingIn', cb);
+    this.on('change', cb);
   },
   offChange(cb) {
     this.db.off('change', cb);
     this.ddp.off('connected', cb);
     this.ddp.off('disconnected', cb);
     this.off('loggingIn', cb);
+    this.off('change', cb);
   },
   on(eventName, cb) {
     this._cbs.push({
@@ -46,9 +52,9 @@ export default {
   off(eventName, cb) {
     this._cbs.splice(this._cbs.findIndex(_cb=>_cb.callback == cb && _cb.eventName == eventName), 1);
   },
-  _notifyLoggingIn() {
+  notify(eventName) {
     this._cbs.map(cb=>{
-      if(cb.eventName=='loggingIn' && typeof cb.callback=='function') {
+      if(cb.eventName == eventName && typeof cb.callback == 'function') {
         cb.callback();
       }
     });

@@ -7,9 +7,13 @@ const TOKEN_KEY = 'reactnativemeteor_usertoken';
 
 module.exports = {
   user() {
+    if(!this._userIdSaved) return null;
+
     return this.collection('users').findOne(this._userIdSaved);
   },
   userId() {
+    if(!this._userIdSaved) return null;
+
     const user = this.collection('users').findOne(this._userIdSaved);
     return user && user._id;
   },
@@ -19,11 +23,16 @@ module.exports = {
   },
   logout(callback) {
     this.call("logout", err => {
-      AsyncStorage.removeItem(TOKEN_KEY);
-      this._tokenIdSaved = null;
-      this._userIdSaved = null;
+      this.handleLogout();
+      this.connect();
+
       typeof callback == 'function' && callback(err);
     });
+  },
+  handleLogout() {
+    AsyncStorage.removeItem(TOKEN_KEY);
+    Data._tokenIdSaved = null;
+    this._userIdSaved = null;
   },
   loginWithPassword(selector, password, callback) {
     if (typeof selector === 'string') {
@@ -58,23 +67,32 @@ module.exports = {
   },
   _startLoggingIn() {
     this._isLoggingIn = true;
-    Data._notifyLoggingIn();
+    Data.notify('loggingIn');
   },
   _endLoggingIn() {
     this._isLoggingIn = false;
-    Data._notifyLoggingIn();
+    Data.notify('loggingIn');
   },
   _handleLoginCallback(err, result) {
     if(!err) {//save user id and token
       AsyncStorage.setItem(TOKEN_KEY, result.token);
-      this._tokenIdSaved = result.token;
+      Data._tokenIdSaved = result.token;
       this._userIdSaved = result.id;
+      Data.notify('onLogin');
+    } else {
+      Data.notify('onLoginFailure');
+      this.handleLogout();
     }
+    Data.notify('change');
   },
   async _loadInitialUser() {
+    var value = null;
     try {
-      var value = await AsyncStorage.getItem(TOKEN_KEY);
-      this._tokenIdSaved = value;
+      value = await AsyncStorage.getItem(TOKEN_KEY);
+    } catch (error) {
+      console.warn('AsyncStorage error: ' + error.message);
+    } finally {
+      Data._tokenIdSaved = value;
       if (value !== null){
         this._startLoggingIn();
         this.call('login', { resume: value }, (err, result) => {
@@ -84,8 +102,7 @@ module.exports = {
       } else {
         this._endLoggingIn();
       }
-    } catch (error) {
-      this._appendMessage('AsyncStorage error: ' + error.message);
     }
+
   }
 }

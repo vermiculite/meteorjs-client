@@ -1,18 +1,6 @@
-[![GitHub version](https://badge.fury.io/gh/inProgress-team%2Freact-native-meteor.svg)](https://badge.fury.io/gh/inProgress-team%2Freact-native-meteor)
-[![npm version](https://badge.fury.io/js/react-native-meteor.svg)](http://badge.fury.io/js/react-native-meteor)
-[![Dependency Status](https://david-dm.org/inProgress-team/react-native-meteor.svg)](https://david-dm.org/inProgress-team/react-native-meteor)
-[![devDependency Status](https://david-dm.org/inProgress-team/react-native-meteor/dev-status.svg)](https://david-dm.org/inProgress-team/react-native-meteor#info=devDependencies)
-[![MIT][license-badge]][license]
-[![bitHound Score][bithound-badge]][bithound]
+# react-native-meteor [![react-native-meteor](http://img.shields.io/npm/dm/react-native-meteor.svg)](https://www.npmjs.org/package/react-native-meteor) [![npm version](https://badge.fury.io/js/react-native-meteor.svg)](http://badge.fury.io/js/react-native-meteor) [![Dependency Status](https://david-dm.org/inProgress-team/react-native-meteor.svg)](https://david-dm.org/inProgress-team/react-native-meteor)
 
-[bithound-badge]: https://www.bithound.io/github/inProgress-Team/react-native-meteor/badges/score.svg
-[bithound]: https://www.bithound.io/github/inProgress-Team/react-native-meteor
-[license-badge]: https://img.shields.io/dub/l/vibe-d.svg
-[license]: https://github.com/inProgress-team/react-native-meteor/blob/master/LICENSE
-
-# react-native-meteor
-
-Meteor-like methods for React Native. **Currently in v1.0.0-beta18** ! For old docs, see [v0.6.2 documentation](https://github.com/inProgress-team/react-native-meteor/tree/0.6.2) (classic ddp interface).
+Meteor-like methods for React Native.
 
 ## What is it for ?
 
@@ -32,7 +20,79 @@ The purpose of this library is :
 ```javascript
 
 import { View, Text, Component } from 'react-native';
-import Meteor, { connectMeteor, MeteorListView } from 'react-native-meteor';
+import Meteor, { createContainer } from 'react-native-meteor';
+
+Meteor.connect('http://192.168.X.X:3000/websocket');//do this only once
+
+class App extends Component {
+  renderRow(todo) {
+    return (
+      <Text>{todo.title}</Text>
+    );
+  }
+  render() {
+    const { settings, todosReady } = this.data;
+
+    <View>
+      <Text>{settings.title}</Text>
+        {!todosReady && <Text>Not ready</Text>}
+
+        <MeteorListView
+          collection="todos"
+          selector={{done: true}}
+          options={{sort: {createdAt: -1}}}
+          renderRow={this.renderRow}
+        />
+    </View>
+
+  }
+}
+
+export default createContainer(params=>{
+  const handle = Meteor.subscribe('todos');
+  Meteor.subscribe('settings');
+
+  return {
+    todosReady: handle.ready(),
+    settings: Meteor.collection('settings').findOne()
+  };
+})
+```
+
+# createContainer
+
+[Since Meteor 1.3, createContainer is the recommended way to go to populate your React Classes](http://guide.meteor.com/v1.3/react.html#using-createContainer). Very similar to getMeteorData but your separate container components from presentational components.
+
+## Example
+
+```javascript
+import Meteor, { createContainer } from 'react-native-meteor';
+
+
+class Orders extends Component {
+  render() {
+    const { pendingOrders } = this.props;
+
+    //...
+    );
+  }
+}
+
+export default createContainer(params=>{
+  return {
+    pendingOrders: Meteor.collection('orders').find({status: "pending"}),
+  };
+}, Orders)
+```
+
+# connectMeteor && getMeteorData
+
+connectMeteor is a React Mixin which enables getMeteorData (the old way of populating meteor data into your components).
+
+## Example
+
+```javascript
+import Meteor, { connectMeteor } from 'react-native-meteor';
 
 /*
 * Uses decorators (see detailed installation to activate it)
@@ -47,54 +107,26 @@ import Meteor, { connectMeteor, MeteorListView } from 'react-native-meteor';
 */
 
 @connectMeteor
-export default class App extends Component {
-  componentWillMount() {
-    const url = 'http://192.168.X.X:3000/websocket';
-    Meteor.connect(url);
-  }
-  startMeteorSubscriptions() {
-    Meteor.subscribe('todos');
-    Meteor.subscribe('settings');
-  }
+class Orders extends Component {
   getMeteorData() {
     return {
-      settings: Meteor.collection('settings').findOne()
+      pendingOrders: Meteor.collection('orders').find({status: "pending"}),
     };
   }
-  renderRow(todo) {
-    return (
-      <Text>{todo.title}</Text>
-    );
-  }
   render() {
-    const { settings } = this.data;
+    const { pendingOrders } = this.props;
 
-    <View>
-      <Text>{settings.title}</Text>
-        <MeteorListView
-          collection="todos"
-          selector={{done: true}}
-          options={{sort: {createdAt: -1}}}
-          renderRow={this.renderRow}
-        />
-    </View>
-
+    //...
+    );
   }
 }
 ```
 
-# connectMeteor
+# Reactive variables
 
-## startMeteorSubscriptions
+These variables can be used inside getMeteorData or createContainer. They will be populated into your component if they change.
 
-Inside this method, you can create subscriptions (see below) when component is mounted. It will automatically unsubscribe if the component is unmounted.
-
-* [Meteor.subscribe](http://docs.meteor.com/#/full/meteor_subscribe)
-
-## getMeteorData
-
-Inside getMeteorData, you can access any Meteor reactive data source, which means :
-
+* [Meteor.subscribe](http://docs.meteor.com/#/full/meteor_subscribe) : returns an handle. !! If the component which called subscribe is unmounted, the subscription is automatically canceled.
 * Meteor.collection(collectionName)
   * [.find(selector, options)](http://docs.meteor.com/#/full/find)
   * [.findOne(selector, options)](http://docs.meteor.com/#/full/findone)
@@ -105,11 +137,13 @@ Inside getMeteorData, you can access any Meteor reactive data source, which mean
 
 # Additionals collection methods
 
+These methods (except update) work offline. That means that elements are correctly updated offline, and when you reconnect to ddp, Meteor calls are taken care of.
+
 * Meteor.collection(collectionName)
   * [.insert(doc, callback)](http://docs.meteor.com/#/full/insert)
   * [.update(id, modifier, [options], [callback])](http://docs.meteor.com/#/full/update)
   * [.remove(id, callback(err, countRemoved))](http://docs.meteor.com/#/full/remove)
-* Meteor.FSCollection(collectionName) : Helper for [Meteor-CollectionFS](https://github.com/CollectionFS/Meteor-CollectionFS). Full documentation [here](https://github.com/inProgress-team/react-native-meteor/blob/master/docs/FSCollection.md)
+
 
 # MeteorListView Component
 
@@ -118,6 +152,8 @@ Same as [ListView](https://facebook.github.io/react-native/docs/listview.html) C
 - `collection` **string** *required*
 - `selector` [**string** / **object**]
 - `options` **object**
+- `listViewRef` [**string** / **function**] ref to ListView component.
+
 
 ### Example usage
 
@@ -127,6 +163,24 @@ Same as [ListView](https://facebook.github.io/react-native/docs/listview.html) C
   selector={{done: true}}
   options={{sort: {createdAt: -1}}}
   renderRow={this.renderItem}
+  //...other listview props
+/>
+```
+
+# MeteorComplexListView Component
+
+Same as [ListView](https://facebook.github.io/react-native/docs/listview.html) Component but does not need dataSource and accepts one argument. You may need it if you make complex requests combining multiples collections.
+
+- `elements` **function** *required* : a reactive function which returns an array of elements.
+- `listViewRef` [**string** / **function**] ref to ListView component.
+
+### Example usage
+
+```javascript
+<MeteorComplexListView
+  elements={()=>{return Meteor.collection('todos').find()}}
+  renderRow={this.renderItem}
+  //...other listview props
 />
 ```
 
@@ -162,6 +216,8 @@ Disconnect from the DDP server.
 * [Accounts.createUser](http://docs.meteor.com/#/full/accounts_createuser)
 * [Accounts.changePassword](http://docs.meteor.com/#/full/accounts_forgotpassword)
 * [Accounts.forgotPassword](http://docs.meteor.com/#/full/accounts_changepassword)
+* [Accounts.onLogin](http://docs.meteor.com/#/full/accounts_onlogin)
+* [Accounts.onLoginFailure](http://docs.meteor.com/#/full/accounts_onloginfailure)
 
 ## Meteor.ddp
 
@@ -171,12 +227,28 @@ Once connected to the ddp server, you can access every method available in [ddp.
 * Meteor.ddp.on('changed')
 * ...
 
-# TODO
+## CollectionFS
 
-- [X] [Helper for Meteor-CollectionFS](https://github.com/inProgress-team/react-native-meteor/issues/18)
-- [ ] [Accounts Methods 2/4](https://github.com/inProgress-team/react-native-meteor/issues/30)
-- [ ] [Meteor user methods 1/2](https://github.com/inProgress-team/react-native-meteor/issues/31)
-- [X] [Update method](https://github.com/inProgress-team/react-native-meteor/issues/24)
-- [X] [When disconnected, minimongo insert is pushing data to view but not send to server when reconnecting.](https://github.com/inProgress-team/react-native-meteor/issues/29)
+* Meteor.FSCollection(collectionName) : Helper for [Meteor-CollectionFS](https://github.com/CollectionFS/Meteor-CollectionFS). Full documentation [here](https://github.com/inProgress-team/react-native-meteor/blob/master/docs/FSCollection.md)
+* This plugin also exposes a FSCollectionImagesPreloader component which helps you preload every image you want in CollectionFS (only available on ios)
 
-Pull Requests are welcome ! :)
+```javascript
+import { FSCollectionImagesPreloader } from 'react-native-meteor';
+
+<FSCollectionImagesPreloader
+  collection="imagesFiles"
+  selector={{metadata.owner: XXX}}
+/>
+```
+
+
+## react-native-router-flux
+
+* [Github repository](https://github.com/inProgress-team/react-native-meteor-router-flux)
+* npm i --save react-native-meteor-router-flux@latest
+* [Custom scene renderer](https://github.com/aksonov/react-native-router-flux#switch-new-feature) which allows to select tab scene to show depending from app state. It could be useful for authentication, restricted scenes, etc.
+
+
+# Want to help ?
+
+Pull Requests and issues reported are welcome ! :)

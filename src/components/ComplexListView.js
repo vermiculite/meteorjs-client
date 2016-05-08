@@ -12,14 +12,9 @@ import Data from '../Data';
 
 export default class MeteorListView extends Component {
   static propTypes = {
-    collection: PropTypes.string.isRequired,
-    selector: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
-    options: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
+    elements: PropTypes.func.isRequired,
     renderRow: PropTypes.func.isRequired,
     listViewRef: PropTypes.oneOfType([ PropTypes.func, PropTypes.string ])
-  };
-  static defaultProps = {
-    selector: {}
   };
   constructor(props) {
     super(props);
@@ -31,33 +26,31 @@ export default class MeteorListView extends Component {
     };
   }
   componentWillReceiveProps(props) {
-    const { collection, selector, options } = props;
+    const { elements } = props;
 
-    this.update(Data.db[collection].find(selector, options));
+    const elems = elements();
+    this.setState({
+      ds: this.state.ds.cloneWithRows(elems)
+    });
+
   }
   componentWillMount() {
-    const { collection, selector, options } = this.props;
 
+    const { elements } = this.props;
 
-    this.update = results=>{
+    this.onChange = ()=>{
+      const elems = elements();
       this.setState({
-        ds: this.state.ds.cloneWithRows(results)
+        ds: this.state.ds.cloneWithRows(elems)
       });
     };
 
+    this.onChange();
+    Data.onChange(this.onChange);
 
-    if(!Data.db[collection]) {
-      Data.db.addCollection(collection)
-    }
-
-    this.items = Data.db.observe(() => {
-      return Data.db[collection].find(selector, options);
-    });
-
-    this.items.subscribe(this.update);
   }
   componentWillUnmount() {
-    this.items.dispose();
+    Data.offChange(this.onChange);
   }
   render() {
     const { ds } = this.state;
