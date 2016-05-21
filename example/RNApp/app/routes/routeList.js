@@ -1,4 +1,5 @@
-import React, { View, Text, Component, ListView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { Component} from 'react';
+import { View, Text, ListView, StyleSheet, TouchableOpacity } from 'react-native';
 import Router from '../router';
 
 const ROUTE_LIST = [

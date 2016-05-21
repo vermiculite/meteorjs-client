@@ -1,4 +1,4 @@
-import React from 'react-native';
+import React from 'react';
 
 import RouteList from './routes/routeList';
 import Connection from './routes/connection';

@@ -1,4 +1,5 @@
-import React, { Component, StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet } from 'react-native';
 import Meteor, { connectMeteor } from 'react-native-meteor';
 import ExNavigator from '@exponent/react-native-navigator';
 import Router from './router';

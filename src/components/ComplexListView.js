@@ -1,8 +1,11 @@
 'use strict';
 
 import React, {
-  Component,
-  PropTypes,
+    Component,
+    PropTypes
+} from 'react';
+
+import { 
   ListView
 } from 'react-native';
 
