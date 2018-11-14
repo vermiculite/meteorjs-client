@@ -2,7 +2,7 @@ import { NetInfo, Platform, View } from 'react-native';
 
 import Trackr from 'trackr';
 import EJSON from 'ejson';
-import DDP from '../lib/ddp.js';
+import DDP from 'ddp.js';
 import Random from '../lib/Random';
 
 import Data from './Data';
