@@ -12,7 +12,6 @@ These variables can be used inside getMeteorData or createContainer. They will b
 * [Meteor.userId()](http://docs.meteor.com/#/full/meteor_userid)
 * [Meteor.status()](http://docs.meteor.com/#/full/meteor_status)
 * [Meteor.loggingIn()](http://docs.meteor.com/#/full/meteor_loggingin)
-* [ReactiveDict()](https://atmospherejs.com/meteor/reactive-dict)
 
 ## Additionals collection methods
 
@@ -22,48 +21,6 @@ These methods (except update) work offline. That means that elements are correct
   * [.insert(doc, callback)](http://docs.meteor.com/#/full/insert)
   * [.update(id, modifier, [options], [callback])](http://docs.meteor.com/#/full/update)
   * [.remove(id, callback(err, countRemoved))](http://docs.meteor.com/#/full/remove)
-
-## ListView Components
-
-### MeteorListView Component
-
-Same as [ListView](https://facebook.github.io/react-native/docs/listview.html) Component but does not need dataSource and accepts three arguments :
-
-* `collection` **string** _required_
-* `selector` [**string** / **object**]
-* `options` **object**
-* `listViewRef` [**string** / **function**] ref to ListView component.
-
-#### Example usage
-
-```javascript
-<MeteorListView
-  collection="todos"
-  selector={{ done: true }}
-  options={{ sort: { createdAt: -1 } }}
-  renderRow={this.renderItem}
-  //...other listview props
-/>
-```
-
-## MeteorComplexListView Component
-
-Same as [ListView](https://facebook.github.io/react-native/docs/listview.html) Component but does not need dataSource and accepts one argument. You may need it if you make complex requests combining multiples collections.
-
-* `elements` **function** _required_ : a reactive function which returns an array of elements.
-* `listViewRef` [**string** / **function**] ref to ListView component.
-
-### Example usage
-
-```javascript
-<MeteorComplexListView
-  elements={() => {
-    return Meteor.collection('todos').find();
-  }}
-  renderRow={this.renderItem}
-  //...other listview props
-/>
-```
 
 ## Meteor Collections
 
@@ -76,7 +33,7 @@ Same as [ListView](https://facebook.github.io/react-native/docs/listview.html) C
 You need pass the `cursoredFind` option when you get your collection if you want to use cursor-like method:
 
 ```javascript
-Meteor.collection("collectionName", { cursoredFind: true })
+Meteor.collection('collectionName', { cursoredFind: true });
 ```
 
 Or you can simply use `find()` to get an array of documents. The option default to false for backward compatibility. Cursor methods are available to share code more easily between a react-native app and a standard Meteor app.
@@ -110,11 +67,6 @@ Disconnect from the DDP server.
 
 ### Convenience packages
 
-Example `import { composeWithTracker } from 'react-native-meteor';`
-
-* EJSON
-* Tracker
-* composeWithTracker: If you want to use [react-komposer](https://github.com/kadirahq/react-komposer), you can use react-native-meteor compatible composeWithTracker
 * Accounts (see below)
 
 ### ReactiveDict
@@ -131,20 +83,6 @@ See [documentation](https://atmospherejs.com/meteor/reactive-dict).
 * [Accounts.resetPassword](http://docs.meteor.com/#/full/accounts_resetpassword)
 * [Accounts.onLogin](http://docs.meteor.com/#/full/accounts_onlogin)
 * [Accounts.onLoginFailure](http://docs.meteor.com/#/full/accounts_onloginfailure)
-
-### FSCollection
-
-* Meteor.FSCollection(collectionName) : Helper for [Meteor-CollectionFS](https://github.com/CollectionFS/Meteor-CollectionFS). Full documentation [here](https://github.com/inProgress-team/react-native-meteor/blob/master/docs/FSCollection.md)
-* This plugin also exposes a FSCollectionImagesPreloader component which helps you preload every image you want in CollectionFS (only available on ios)
-
-```javascript
-import { FSCollectionImagesPreloader } from 'react-native-meteor';
-
-<FSCollectionImagesPreloader
-  collection="imagesFiles"
-  selector={{metadata.owner: XXX}}
-/>
-```
 
 ### Meteor.ddp
 

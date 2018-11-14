@@ -1,6 +1,5 @@
 import { NetInfo, Platform, View } from 'react-native';
 
-import reactMixin from 'react-mixin';
 import Trackr from 'trackr';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
@@ -10,52 +9,24 @@ import Data from './Data';
 import { Collection } from './Collection';
 import call from './Call';
 
-import Mixin from './components/Mixin';
-import MeteorListView from './components/ListView';
-import MeteorComplexListView from './components/ComplexListView';
-import createContainer from './components/createContainer';
 import withTracker from './components/ReactMeteorData';
-import composeWithTracker from './components/composeWithTracker';
-
-import FSCollection from './CollectionFS/FSCollection';
-import FSCollectionImagesPreloader from './CollectionFS/FSCollectionImagesPreloader';
-
-import ReactiveDict from './ReactiveDict';
 
 import User from './user/User';
 import Accounts from './user/Accounts';
 
 module.exports = {
-  composeWithTracker,
   Accounts,
   Tracker: Trackr,
-  EJSON,
-  MeteorListView,
-  MeteorComplexListView,
-  ReactiveDict,
   Collection,
-  FSCollectionImagesPreloader:
-    Platform.OS == 'android' ? View : FSCollectionImagesPreloader,
   collection(name, options) {
     return new Collection(name, options);
   },
-  FSCollection,
-  createContainer,
   withTracker,
-  getData() {
-    return Data;
-  },
-  connectMeteor(reactClass) {
-    return reactMixin.onClass(reactClass, Mixin);
-  },
   ...User,
   status() {
     return {
       connected: Data.ddp ? Data.ddp.status == 'connected' : false,
       status: Data.ddp ? Data.ddp.status : 'disconnected',
-      //retryCount: 0
-      //retryTime:
-      //reason:
     };
   },
   call: call,
@@ -104,7 +75,6 @@ module.exports = {
 
       Data.notify('change');
 
-      console.info('Connected to DDP server.');
       this._loadInitialUser().then(() => {
         this._subscriptionsRestart();
       });
