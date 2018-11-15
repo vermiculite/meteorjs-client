@@ -1,5 +1,4 @@
-import { NetInfo, Platform, View } from 'react-native';
-
+// TODO generic way to see if we are online or not not react native specific.
 import Trackr from 'trackr';
 import EJSON from 'ejson';
 import DDP from 'ddp.js';
@@ -14,13 +13,14 @@ import withTracker from './components/ReactMeteorData';
 import User from './user/User';
 import Accounts from './user/Accounts';
 
-module.exports = {
+const Meteor = {
   Accounts,
   Tracker: Trackr,
   Collection,
   collection(name, options) {
     return new Collection(name, options);
   },
+  isClient: true,
   withTracker,
   ...User,
   status() {
@@ -59,11 +59,11 @@ module.exports = {
       ...options,
     });
 
-    NetInfo.isConnected.addEventListener('connectionChange', isConnected => {
-      if (isConnected && Data.ddp.autoReconnect) {
-        Data.ddp.connect();
-      }
-    });
+    // NetInfo.isConnected.addEventListener('connectionChange', isConnected => {
+    //   if (isConnected && Data.ddp.autoReconnect) {
+    //     Data.ddp.connect();
+    //   }
+    // });
 
     Data.ddp.on('connected', () => {
       // Clear the collections of any stale data in case this is a reconnect
@@ -283,3 +283,9 @@ module.exports = {
     return handle;
   },
 };
+
+export default {
+  isClient: true,
+}
+
+

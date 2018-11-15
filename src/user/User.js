@@ -1,5 +1,4 @@
-import { AsyncStorage } from 'react-native';
-
+// Todo replace async storage with a more general purpose solution localforage I think
 import Data from '../Data';
 import { hashPassword } from '../../lib/utils';
 import call from '../Call';
