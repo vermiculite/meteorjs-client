@@ -1,10 +1,10 @@
-import minimongo from 'minimongo-cache';
+const minimongo = require('minimongo-cache') ;
 process.nextTick = setImmediate;
 
 const db = new minimongo();
 db.debug = false;
 
-export default {
+module.exports = {
   _endpoint: null,
   _options: null,
   ddp: null,

@@ -1,17 +1,15 @@
 // TODO generic way to see if we are online or not not react native specific.
-import Trackr from 'trackr';
-import EJSON from 'ejson';
-import DDP from 'ddp.js';
-import Random from '../lib/Random';
+const Trackr = require('trackr')
+const EJSON = require('ejson') ;
+const DDP  = require('ddp.js');
+const Random = require('../lib/Random');
 
-import Data from './Data';
-import { Collection } from './Collection';
-import call from './Call';
+const Data = require('./Data');
+const { Collection } = require('./Collection');
+const call =  require('./Call');
 
-import withTracker from './components/ReactMeteorData';
-
-import User from './user/User';
-import Accounts from './user/Accounts';
+const User = require('./user/User') ;
+const Accounts = require('./user/Accounts') ;
 
 const Meteor = {
   Accounts,
@@ -21,7 +19,6 @@ const Meteor = {
     return new Collection(name, options);
   },
   isClient: true,
-  withTracker,
   ...User,
   status() {
     return {
@@ -284,7 +281,7 @@ const Meteor = {
   },
 };
 
-export default {
+module.exports =  {
   isClient: true,
 }
 

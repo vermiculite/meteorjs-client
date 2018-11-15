@@ -1,11 +1,11 @@
-import Tracker from 'trackr';
-import EJSON from 'ejson';
-import _ from 'underscore';
+const Tracker = require('trackr');
+const EJSON = require('ejson');
+const _ = require('underscore') ;
 
-import Data from './Data';
-import Random from '../lib/Random';
-import call from './Call';
-import { isPlainObject } from '../lib/utils.js';
+const Data = require('./Data');
+const Random = require('../lib/Random');
+const call = require('./Call');
+const { isPlainObject } = require('../lib/utils.js');
 
 class Cursor {
   constructor(collection, docs) {
@@ -36,7 +36,7 @@ class Cursor {
   }
 }
 
-export class Collection {
+class Collection {
   constructor(name, options = {}) {
     if (!Data.db[name]) Data.db.addCollection(name);
 
@@ -235,4 +235,8 @@ function wrapTransform(transform) {
   };
   wrapped.__wrappedTransform__ = true;
   return wrapped;
+}
+
+module.exports = {
+  Collection,
 }
