@@ -37,8 +37,8 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
+    "mock-require": "^3.0.2",
     "mock-socket": "^2.0.0",
-    "prettier": "1.12.1",
     "sinon": "^1.17.3"
   },
   "peerDependencies": {

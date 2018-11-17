@@ -243,7 +243,7 @@ const Meteor = {
     }
 
     // return a handle to the application.
-    var handle = {
+    const handle = {
       stop: function() {
         if (Data.subscriptions[id]) Data.subscriptions[id].stop();
       },
@@ -282,7 +282,7 @@ const Meteor = {
 };
 
 module.exports =  {
-  isClient: true,
+  Meteor,
 }
 
 
