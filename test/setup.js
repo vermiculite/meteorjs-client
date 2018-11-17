@@ -9,3 +9,5 @@ global.sinon = sinon;
 global.should = should;
 global.WebSocket = mockWebSocket;
 global.SocketServer = mockServer;
+
+console.log('In setup')

@@ -10,11 +10,13 @@ const call =  require('./Call');
 
 const User = require('./user/User') ;
 const Accounts = require('./user/Accounts') ;
+const absoluteUrl = require('./absoluteUrl')
 
 const Meteor = {
   Accounts,
   Tracker: Trackr,
   Collection,
+  absoluteUrl,
   collection(name, options) {
     return new Collection(name, options);
   },
