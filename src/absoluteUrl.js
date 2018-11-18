@@ -14,7 +14,6 @@ function getProtocol(url, secure) {
 
 function appendHttpPrefix(url, secure) {
   const protocol = getProtocol(url, secure);
-  console.log(protocol, secure);
   if (url && url.match('http[s]?://.*')) {
     return url.replace(/^http[s]?/, protocol);
   }
