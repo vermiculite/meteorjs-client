@@ -21,6 +21,7 @@ const Meteor = {
     return new Collection(name, options);
   },
   isClient: true,
+  isCordova: false,
   ...User,
   status() {
     return {

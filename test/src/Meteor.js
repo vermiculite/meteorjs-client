@@ -70,4 +70,9 @@ describe('Meteor', function() {
 
     });
   });
+  describe('#isCordova', function() {
+    it('should be false', function() {
+      Meteor.isCordova.should.equal(false)
+    })
+  })
 });

@@ -37,7 +37,6 @@ function appendPath(root, path) {
 
 function doReplaceLocalhost(url, replaceLocalhost) {
   if(replaceLocalhost) {
-    console.log('In replace localhost')
     return url.replace('://localhost', '://127.0.0.1')
   }
   return url;
