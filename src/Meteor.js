@@ -13,7 +13,6 @@ import call from './Call';
 
 import Mixin from './components/Mixin';
 import ListView from './components/ListView';
-import MeteorComplexListView from './components/ComplexListView';
 import createContainer from './components/createContainer';
 
 import FSCollection from './CollectionFS/FSCollection';
@@ -26,7 +25,6 @@ import Accounts from './user/Accounts';
 module.exports = {
   Accounts: Accounts,
   MeteorListView: ListView,
-  MeteorComplexListView: MeteorComplexListView,
   FSCollectionImagesPreloader: Platform.OS == 'android' ? View : FSCollectionImagesPreloader,
   collection: collection,
   FSCollection: FSCollection,
