@@ -15,7 +15,6 @@ import Mixin from './components/Mixin';
 import ListView from './components/ListView';
 import createContainer from './components/createContainer';
 
-import FSCollection from './CollectionFS/FSCollection';
 import FSCollectionImagesPreloader from './CollectionFS/FSCollectionImagesPreloader';
 
 import User from './user/User';
@@ -27,7 +26,6 @@ module.exports = {
   MeteorListView: ListView,
   FSCollectionImagesPreloader: Platform.OS == 'android' ? View : FSCollectionImagesPreloader,
   collection: collection,
-  FSCollection: FSCollection,
   createContainer: createContainer,
   getData() {
     return Data;
