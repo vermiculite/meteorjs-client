@@ -11,11 +11,7 @@ import Data from './Data';
 import collection from './Collection';
 import call from './Call';
 
-import Mixin from './components/Mixin';
-import ListView from './components/ListView';
 import createContainer from './components/createContainer';
-
-import FSCollectionImagesPreloader from './CollectionFS/FSCollectionImagesPreloader';
 
 import User from './user/User';
 import Accounts from './user/Accounts';
@@ -23,15 +19,10 @@ import Accounts from './user/Accounts';
 
 module.exports = {
   Accounts: Accounts,
-  MeteorListView: ListView,
-  FSCollectionImagesPreloader: Platform.OS == 'android' ? View : FSCollectionImagesPreloader,
   collection: collection,
   createContainer: createContainer,
   getData() {
     return Data;
-  },
-  connectMeteor(reactClass) {
-    return reactMixin.onClass(reactClass, Mixin);
   },
   ...User,
   status() {
