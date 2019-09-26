@@ -26,7 +26,7 @@ export default {
 
     if(this.startMeteorSubscriptions) {
       if(!EJSON.equals(this.state, nextState) || !EJSON.equals(this.props, nextProps)) {
-        this._meteorSubscriptionsManager._meteorDataChangedCallback()
+        this._meteorSubscriptionsManager._meteorDataChangedCallback();
       }
     }
 

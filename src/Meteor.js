@@ -1,7 +1,4 @@
-
-import { NetInfo, Platform, View } from 'react-native';
-
-import reactMixin from 'react-mixin';
+import NetInfo from "@react-native-community/netinfo";
 import Trackr from 'trackr';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
