@@ -1,10 +1,20 @@
-import React from 'react-native';
+import ReactNative from 'react-native/Libraries/Renderer/shims/ReactNative';
 import minimongo from 'minimongo-cache';
+import Trackr from 'trackr';
+import { InteractionManager } from 'react-native';
 process.nextTick = setImmediate;
 
 const db = new minimongo();
 db.debug = false;
-db.batchedUpdates = React.addons.batchedUpdates;
+db.batchedUpdates = ReactNative.unstable_batchedUpdates;
+
+function runAfterOtherComputations(fn) {
+  InteractionManager.runAfterInteractions(() => {
+    Trackr.afterFlush(() => {
+      fn();
+    });
+  });
+}
 
 export default {
   _endpoint: null,
@@ -19,12 +29,12 @@ export default {
   },
 
   waitDdpReady(cb) {
-    if(this.ddp) {
+    if (this.ddp) {
       cb();
     } else {
-      setTimeout(()=>{
+      runAfterOtherComputations(() => {
         this.waitDdpReady(cb);
-      }, 10);
+      });
     }
   },
 
@@ -46,17 +56,33 @@ export default {
   on(eventName, cb) {
     this._cbs.push({
       eventName: eventName,
-      callback: cb
+      callback: cb,
     });
   },
   off(eventName, cb) {
-    this._cbs.splice(this._cbs.findIndex(_cb=>_cb.callback == cb && _cb.eventName == eventName), 1);
+    this._cbs.splice(
+      this._cbs.findIndex(
+        _cb => _cb.callback == cb && _cb.eventName == eventName
+      ),
+      1
+    );
   },
   notify(eventName) {
-    this._cbs.map(cb=>{
-      if(cb.eventName == eventName && typeof cb.callback == 'function') {
+    this._cbs.map(cb => {
+      if (cb.eventName == eventName && typeof cb.callback == 'function') {
         cb.callback();
       }
     });
-  }
-}
+  },
+  waitDdpConnected(cb) {
+    if (this.ddp && this.ddp.status == 'connected') {
+      cb();
+    } else if (this.ddp) {
+      this.ddp.once('connected', cb);
+    } else {
+      setTimeout(() => {
+        this.waitDdpConnected(cb);
+      }, 10);
+    }
+  },
+};

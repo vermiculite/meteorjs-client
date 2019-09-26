@@ -1,16 +1,10 @@
-import React, { Component} from 'react';
-import{ View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Meteor, { connectMeteor, MeteorListView } from 'react-native-meteor';
 import Button from '../components/button';
 
-@connectMeteor
 class MeteorListViewComponent extends Component {
-  getMeteorData() {
-    const itemsHandle = Meteor.subscribe('items');
-    return {
-      itemsReady: itemsHandle.ready()
-    };
-  }
 
   renderRow(item) {
     return (
@@ -24,7 +18,7 @@ class MeteorListViewComponent extends Component {
   }
 
   render() {
-    const { itemsReady } = this.data;
+    const { itemsReady } = this.props;
     if (!itemsReady) {
       return (
         <View>
@@ -32,7 +26,7 @@ class MeteorListViewComponent extends Component {
         </View>
       )
     }
-    
+
     return (
       <View style={styles.container}>
         <View style={styles.buttonContainer}>
@@ -50,6 +44,10 @@ class MeteorListViewComponent extends Component {
     );
   }
 }
+
+MeteorListViewComponent.propTypes = {
+  itemsReady: PropTypes.bool.isRequired
+};
 
 export default MeteorListViewComponent;
 

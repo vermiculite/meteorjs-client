@@ -2,17 +2,18 @@ import { AsyncStorage } from 'react-native';
 
 import Data from '../Data';
 import { hashPassword } from '../../lib/utils';
+import call from '../Call';
 
 const TOKEN_KEY = 'reactnativemeteor_usertoken';
 
 module.exports = {
   user() {
-    if(!this._userIdSaved) return null;
+    if (!this._userIdSaved) return null;
 
     return this.collection('users').findOne(this._userIdSaved);
   },
   userId() {
-    if(!this._userIdSaved) return null;
+    if (!this._userIdSaved) return null;
 
     const user = this.collection('users').findOne(this._userIdSaved);
     return user && user._id;
@@ -22,7 +23,7 @@ module.exports = {
     return this._isLoggingIn;
   },
   logout(callback) {
-    this.call("logout", err => {
+    call('logout', err => {
       this.handleLogout();
       this.connect();
 
@@ -36,33 +37,45 @@ module.exports = {
   },
   loginWithPassword(selector, password, callback) {
     if (typeof selector === 'string') {
-      if (selector.indexOf('@') === -1)
-        selector = {username: selector};
-      else
-        selector = {email: selector};
+      if (selector.indexOf('@') === -1) selector = { username: selector };
+      else selector = { email: selector };
     }
 
     this._startLoggingIn();
-    this.call("login", {
+    call(
+      'login',
+      {
         user: selector,
-        password: hashPassword(password)
-    }, (err, result)=>{
+        password: hashPassword(password),
+      },
+      (err, result) => {
+        this._endLoggingIn();
+
+        this._handleLoginCallback(err, result);
+
+        typeof callback == 'function' && callback(err);
+      }
+    );
+  },
+  logoutOtherClients(callback = () => {}) {
+    call('getNewToken', (err, res) => {
+      if (err) return callback(err);
+
+      this._handleLoginCallback(err, res);
+
+      call('removeOtherTokens', err => {
+        callback(err);
+      });
+    });
+  },
+  _login(user, callback) {
+    this._startLoggingIn();
+    this.call('login', user, (err, result) => {
       this._endLoggingIn();
 
       this._handleLoginCallback(err, result);
 
       typeof callback == 'function' && callback(err);
-    });
-  },
-  logoutOtherClients(callback = ()=>{}) {
-    this.call('getNewToken', (err, res) => {
-      if(err) return callback(err);
-
-      this._handleLoginCallback(err, res);
-
-      this.call('removeOtherTokens', err=>{
-        callback(err);
-      })
     });
   },
   _startLoggingIn() {
@@ -74,7 +87,8 @@ module.exports = {
     Data.notify('loggingIn');
   },
   _handleLoginCallback(err, result) {
-    if(!err) {//save user id and token
+    if (!err) {
+      //save user id and token
       AsyncStorage.setItem(TOKEN_KEY, result.token);
       Data._tokenIdSaved = result.token;
       this._userIdSaved = result.id;
@@ -85,6 +99,21 @@ module.exports = {
     }
     Data.notify('change');
   },
+  _loginWithToken(value) {
+    Data._tokenIdSaved = value;
+    if (value !== null) {
+      this._startLoggingIn();
+      call('login', { resume: value }, (err, result) => {
+        this._endLoggingIn();
+        this._handleLoginCallback(err, result);
+      });
+    } else {
+      this._endLoggingIn();
+    }
+  },
+  getAuthToken() {
+    return Data._tokenIdSaved;
+  },
   async _loadInitialUser() {
     var value = null;
     try {
@@ -92,17 +121,7 @@ module.exports = {
     } catch (error) {
       console.warn('AsyncStorage error: ' + error.message);
     } finally {
-      Data._tokenIdSaved = value;
-      if (value !== null){
-        this._startLoggingIn();
-        this.call('login', { resume: value }, (err, result) => {
-          this._endLoggingIn();
-          this._handleLoginCallback(err, result);
-        });
-      } else {
-        this._endLoggingIn();
-      }
+      this._loginWithToken(value);
     }
-
-  }
-}
+  },
+};
