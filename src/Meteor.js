@@ -8,33 +8,18 @@ import Data from './Data';
 import { Collection } from './Collection';
 import call from './Call';
 
-import Mixin from './components/Mixin';
-import MeteorListView from './components/ListView';
-import MeteorComplexListView from './components/ComplexListView';
-import createContainer from './components/createContainer';
 import withTracker from './components/ReactMeteorData';
-import composeWithTracker from './components/composeWithTracker';
 
 import User from './user/User';
 import Accounts from './user/Accounts';
 
 module.exports = {
-  Accounts: Accounts,
-  collection: collection,
-  createContainer: createContainer,
-  composeWithTracker,
   Accounts,
   Tracker: Trackr,
-  EJSON,
-  ReactiveDict,
   Collection,
-  FSCollectionImagesPreloader:
-    Platform.OS == 'android' ? View : FSCollectionImagesPreloader,
   collection(name, options) {
     return new Collection(name, options);
   },
-  FSCollection,
-  createContainer,
   withTracker,
   getData() {
     return Data;
@@ -195,25 +180,6 @@ module.exports = {
         callbacks = params.pop();
       }
     }
-
-    // Is there an existing sub with the same name and param, run in an
-    // invalidated Computation? This will happen if we are rerunning an
-    // existing computation.
-    //
-    // For example, consider a rerun of:
-    //
-    //     Tracker.autorun(function () {
-    //       Meteor.subscribe("foo", Session.get("foo"));
-    //       Meteor.subscribe("bar", Session.get("bar"));
-    //     });
-    //
-    // If "foo" has changed but "bar" has not, we will match the "bar"
-    // subcribe to an existing inactive subscription in order to not
-    // unsub and resub the subscription unnecessarily.
-    //
-    // We only look for one such sub; if there are N apparently-identical subs
-    // being invalidated, we will require N matching subscribe calls to keep
-    // them all active.
 
     let existing = false;
     for (var i in Data.subscriptions) {
