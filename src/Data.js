@@ -1,5 +1,5 @@
-const minimongo = require('minimongo-cache');
-const Trackr = require('trackr');
+import minimongo from 'minimongo-cache';
+import Trackr from 'trackr';
 
 const db = new minimongo();
 db.debug = false;

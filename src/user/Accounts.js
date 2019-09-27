@@ -1,7 +1,7 @@
-const Data = require('../Data');
-const call = require('../Call');
-const User = require('./User');
-const { hashPassword } = require('../../lib/utils');
+import Data from '../Data';
+import call from '../Call';
+import User from './User';
+import { hashPassword } from '../../lib/utils';
 
 module.exports = {
   createUser(options, callback = () => {}) {

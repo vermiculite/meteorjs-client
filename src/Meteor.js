@@ -1,16 +1,16 @@
-const Trackr = require('trackr');
-const EJSON = require('ejson');
-const DDP = require('../lib/ddp.js');
-const Random = require('../lib/Random');
+import Trackr from 'trackr';
+import EJSON from 'ejson';
+import DDP from '../lib/ddp.js';
+import Random from '../lib/Random';
 
-const Data = require('./Data');
-const { Collection } = require('./Collection');
-const call = require('./Call');
+import Data from './Data';
+import { Collection } from './Collection';
+import call from './Call';
 
-const User = require('./user/User');
-const Accounts = require('./user/Accounts');
+import User from './user/User';
+import Accounts from './user/Accounts';
 
-module.exports = {
+export default {
   Accounts,
   Tracker: Trackr,
   Collection,

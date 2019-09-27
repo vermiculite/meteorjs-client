@@ -1,11 +1,11 @@
-const Tracker = require('trackr');
-const EJSON = require('ejson');
-const _ = require('underscore');
+import Tracker from 'trackr';
+import EJSON from 'ejson';
+import _ from 'underscore';
 
-const Data = require('./Data');
-const Random = require('../lib/Random');
-const call = require('./Call');
-const { isPlainObject } = require('../lib/utils.js');
+import Data from './Data';
+import Random from '../lib/Random';
+import call from './Call';
+import { isPlainObject } from '../lib/utils.js';
 
 class Cursor {
   constructor(collection, docs) {

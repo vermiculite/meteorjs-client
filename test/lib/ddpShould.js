@@ -1,4 +1,5 @@
-const DDP = require('../../lib/ddp');
+'use strict';
+import DDP from '../../lib/ddp';
 
 describe('ddp', function() {
   let validOptions;

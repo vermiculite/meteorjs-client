@@ -1,4 +1,4 @@
-const Data = require('./Data');
+import Data from './Data';
 
 export default function(eventName) {
   var args = Array.prototype.slice.call(arguments, 1);

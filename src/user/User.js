@@ -1,6 +1,6 @@
-const Data = require('../Data');
-const { hashPassword } = require('../../lib/utils');
-const call = require('../Call');
+import Data from '../Data';
+import { hashPassword } from '../../lib/utils';
+import call from '../Call';
 
 const TOKEN_KEY = 'reactnativemeteor_usertoken';
 
