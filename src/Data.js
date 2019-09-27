@@ -1,19 +1,15 @@
-import ReactNative from 'react-native/Libraries/Renderer/shims/ReactNative';
-import minimongo from 'minimongo-cache';
-import Trackr from 'trackr';
-import { InteractionManager } from 'react-native';
-process.nextTick = setImmediate;
+const minimongo = require('minimongo-cache');
+const Trackr = require('trackr');
 
 const db = new minimongo();
 db.debug = false;
-db.batchedUpdates = ReactNative.unstable_batchedUpdates;
 
 function runAfterOtherComputations(fn) {
-  InteractionManager.runAfterInteractions(() => {
+  // InteractionManager.runAfterInteractions(() => { // TODO allow something similar to stop running on main thread and blocking ui.
     Trackr.afterFlush(() => {
       fn();
     });
-  });
+  // });
 }
 
 export default {

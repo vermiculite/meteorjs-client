@@ -83,12 +83,6 @@ export default withTracker(params => {
 })(App);
 ```
 
-## Documentation
-
-- Learn how to getting started from [connecting your components](docs/connect-your-components.md).
-- The [API reference](docs/api.md) lists all public APIs.
-- Visit the [How To ?](docs/how-to.md) section for further information.
-
 ## Author
 
 * Théo Mathieu ([@Mokto](https://github.com/Mokto)) from [inProgress](https://in-progress.io)

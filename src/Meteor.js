@@ -1,17 +1,14 @@
-import NetInfo from "@react-native-community/netinfo";
-import Trackr from 'trackr';
-import EJSON from 'ejson';
-import DDP from '../lib/ddp.js';
-import Random from '../lib/Random';
+const Trackr = require('trackr');
+const EJSON = require('ejson');
+const DDP = require('../lib/ddp.js');
+const Random = require('../lib/Random');
 
-import Data from './Data';
-import { Collection } from './Collection';
-import call from './Call';
+const Data = require('./Data');
+const { Collection } = require('./Collection');
+const call = require('./Call');
 
-import withTracker from './components/ReactMeteorData';
-
-import User from './user/User';
-import Accounts from './user/Accounts';
+const User = require('./user/User');
+const Accounts = require('./user/Accounts');
 
 module.exports = {
   Accounts,
@@ -20,7 +17,6 @@ module.exports = {
   collection(name, options) {
     return new Collection(name, options);
   },
-  withTracker,
   getData() {
     return Data;
   },
@@ -64,11 +60,12 @@ module.exports = {
       ...options,
     });
 
-    NetInfo.isConnected.addEventListener('connectionChange', isConnected => {
-      if (isConnected && Data.ddp.autoReconnect) {
-        Data.ddp.connect();
-      }
-    });
+    // TODO add to relevant implementations dom react-native e.t.c.
+    // NetInfo.isConnected.addEventListener('connectionChange', isConnected => {
+    //   if (isConnected && Data.ddp.autoReconnect) {
+    //     Data.ddp.connect();
+    //   }
+    // });
 
     Data.ddp.on('connected', () => {
       // Clear the collections of any stale data in case this is a reconnect
