@@ -10,6 +10,7 @@ import call from './Call';
 
 import User from './user/User';
 import Accounts from './user/Accounts';
+import withTracker from './components/ReactMeteorData';
 
 module.exports = {
   Accounts,
