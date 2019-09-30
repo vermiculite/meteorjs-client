@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import Trackr from 'trackr';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
@@ -10,13 +11,14 @@ import call from './Call';
 import User from './user/User';
 import Accounts from './user/Accounts';
 
-export default {
+module.exports = {
   Accounts,
   Tracker: Trackr,
   Collection,
   collection(name, options) {
     return new Collection(name, options);
   },
+  withTracker,
   getData() {
     return Data;
   },
@@ -60,12 +62,11 @@ export default {
       ...options,
     });
 
-    // TODO add to relevant implementations dom react-native e.t.c.
-    // NetInfo.isConnected.addEventListener('connectionChange', isConnected => {
-    //   if (isConnected && Data.ddp.autoReconnect) {
-    //     Data.ddp.connect();
-    //   }
-    // });
+    NetInfo.isConnected.addEventListener('connectionChange', isConnected => {
+      if (isConnected && Data.ddp.autoReconnect) {
+        Data.ddp.connect();
+      }
+    });
 
     Data.ddp.on('connected', () => {
       // Clear the collections of any stale data in case this is a reconnect

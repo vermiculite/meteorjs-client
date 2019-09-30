@@ -1,3 +1,5 @@
+import { AsyncStorage } from 'react-native';
+
 import Data from '../Data';
 import { hashPassword } from '../../lib/utils';
 import call from '../Call';
@@ -29,7 +31,7 @@ module.exports = {
     });
   },
   handleLogout() {
-    // AsyncStorage.removeItem(TOKEN_KEY); TODO allow storing in async storage or equivalent
+    AsyncStorage.removeItem(TOKEN_KEY);
     Data._tokenIdSaved = null;
     this._userIdSaved = null;
   },
@@ -87,7 +89,7 @@ module.exports = {
   _handleLoginCallback(err, result) {
     if (!err) {
       //save user id and token
-      // AsyncStorage.setItem(TOKEN_KEY, result.token); TODO allow environment specific solution.
+      AsyncStorage.setItem(TOKEN_KEY, result.token);
       Data._tokenIdSaved = result.token;
       this._userIdSaved = result.id;
       Data.notify('onLogin');
@@ -113,14 +115,13 @@ module.exports = {
     return Data._tokenIdSaved;
   },
   async _loadInitialUser() {
-    // TODO Once enabled storing data between restarts for platform do this...
-    // var value = null;
-    // try {
-    //   value = await AsyncStorage.getItem(TOKEN_KEY);
-    // } catch (error) {
-    //   console.warn('AsyncStorage error: ' + error.message);
-    // } finally {
-    //   this._loginWithToken(value);
-    // }
+    var value = null;
+    try {
+      value = await AsyncStorage.getItem(TOKEN_KEY);
+    } catch (error) {
+      console.warn('AsyncStorage error: ' + error.message);
+    } finally {
+      this._loginWithToken(value);
+    }
   },
 };

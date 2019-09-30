@@ -1,8 +1,8 @@
-import sinon from 'sinon'
-import chai from 'chai'
-const should = chai.should();
-import {WebSocket as mockWebSocket} from 'mock-socket';
-import {Server as mockServer} from 'mock-socket';
+var sinon = require('sinon');
+var chai = require('chai');
+var should = chai.should();
+var mockWebSocket = require('mock-socket').WebSocket;
+var mockServer = require('mock-socket').Server;
 
 global.sinon = sinon;
 global.should = should;
