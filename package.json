@@ -1,7 +1,7 @@
 {
-  "name": "react-native-meteor",
-  "version": "1.4.0",
-  "description": "Full Meteor Client for React Native",
+  "name": "meteorjs-client",
+  "version": "2.0.0",
+  "description": "Meteor Client for JavaScript",
   "main": "src/Meteor.js",
   "scripts": {
     "test": "mocha --require @babel/register --recursive",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inProgress-team/react-native-meteor.git"
+    "url": "git+https://github.com/vermiculite/meteorjs-client.git"
   },
   "keywords": [
     "react-component",
@@ -26,12 +26,12 @@
     "ios",
     "android"
   ],
-  "author": "Théo Mathieu",
+  "author": "Sean Hayes <seanowenhayes@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/inProgress-team/react-native-meteor/issues"
+    "url": "https://github.com/vermiculite/meteorjs-client/issues"
   },
-  "homepage": "https://github.com/inProgress-team/react-native-meteor#readme",
+  "homepage": "https://github.com/vermiculite/meteorjs-client",
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.2",
     "@react-native-community/netinfo": "^4.2.2",
