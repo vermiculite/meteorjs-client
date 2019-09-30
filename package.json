@@ -1,6 +1,6 @@
 {
   "name": "meteorjs-client",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Meteor Client for JavaScript",
   "main": "src/Meteor.js",
   "scripts": {
@@ -18,9 +18,8 @@
     "url": "git+https://github.com/vermiculite/meteorjs-client.git"
   },
   "keywords": [
-    "react-component",
-    "ddp",
     "meteor",
+    "ddp",
     "react",
     "react-native",
     "ios",
