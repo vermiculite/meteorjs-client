@@ -104,6 +104,15 @@ Are we currently connected to the server.
 const {connected, status} = Meteor.status()
 ```
 
+## Why does this exist?
+I have used react-native-meteor for some years in production.
+However, it is not being kept upto date and stopped me updating to newer react-native versions.
+This fork was created to stay up to date with changes in react, also reducing the size of the library removing non essential parts. This will aid the process of staying upto date.
+
+## Where is it going?
+The idea is to have a core js library with implementations for React, Vue, React Native e.t.c.
+That's the plan lets see how we do
+
 ## Want to help ?
 
 Pull Requests and issues reported are welcome! :)
